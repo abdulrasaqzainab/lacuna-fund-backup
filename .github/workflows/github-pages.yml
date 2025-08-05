@@ -1,0 +1,36 @@
+# This workflow will deploy the static site to GitHub Pages
+# Make sure to enable GitHub Pages in your repository settings and set the source to 'gh-pages' branch
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Copy site files (index.html as root)
+        run: |
+          mkdir public
+          cp lacunafund-httrack-backup/index.html public/index.html
+          cp -r lacunafund-httrack-backup/lacunafund.org public/
+          cp -r lacunafund-httrack-backup/*.gif public/ || true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
