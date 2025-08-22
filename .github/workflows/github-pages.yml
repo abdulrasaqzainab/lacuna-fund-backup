@@ -2,9 +2,9 @@
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
+  
   push:
-    branches: ["main"]
+      branches: ["master"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -16,13 +16,13 @@ permissions:
   id-token: write
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
+ 
   deploy:
     environment:
       name: github-pages
@@ -31,30 +31,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      
-      - name: Create redirect index.html
-        run: |
-          echo '<!DOCTYPE html>' > index.html
-          echo '<html>' >> index.html
-          echo '<head>' >> index.html
-          echo '  <meta charset="UTF-8">' >> index.html
-          echo '  <meta http-equiv="refresh" content="0; url=lacunafund.org/index.html">' >> index.html
-          echo '  <title>Redirecting to Lacuna Fund</title>' >> index.html
-          echo '</head>' >> index.html
-          echo '<body>' >> index.html
-          echo '  <p>Redirecting to <a href="lacunafund.org/index.html">Lacuna Fund</a>...</p>' >> index.html
-          echo '</body>' >> index.html
-          echo '</html>' >> index.html
-      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload the entire directory with our redirect at root
-          path: '.'
-      
+          # Upload only the site directory --
+          path: './lacunafund-httrack-backup/la'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
