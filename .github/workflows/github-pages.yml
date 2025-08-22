@@ -31,13 +31,30 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      
+      - name: Create redirect index.html
+        run: |
+          echo '<!DOCTYPE html>' > index.html
+          echo '<html>' >> index.html
+          echo '<head>' >> index.html
+          echo '  <meta charset="UTF-8">' >> index.html
+          echo '  <meta http-equiv="refresh" content="0; url=lacunafund.org/index.html">' >> index.html
+          echo '  <title>Redirecting to Lacuna Fund</title>' >> index.html
+          echo '</head>' >> index.html
+          echo '<body>' >> index.html
+          echo '  <p>Redirecting to <a href="lacunafund.org/index.html">Lacuna Fund</a>...</p>' >> index.html
+          echo '</body>' >> index.html
+          echo '</html>' >> index.html
+      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload only the site directory
-          path: './lacunafund-httrack-backup'
+          # Upload the entire directory with our redirect at root
+          path: '.'
+      
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
