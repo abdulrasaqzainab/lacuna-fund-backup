@@ -34,26 +34,52 @@ jobs:
       
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      
-      - name: Create redirect index.html
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          
+      - name: Create _site directory and copy httrack files
         run: |
-          echo '<!DOCTYPE html>' > index.html
-          echo '<html>' >> index.html
-          echo '<head>' >> index.html
-          echo '  <meta charset="UTF-8">' >> index.html
-          echo '  <meta http-equiv="refresh" content="0; url=lacunafund.org/index.html">' >> index.html
-          echo '  <title>Redirecting to Lacuna Fund</title>' >> index.html
-          echo '</head>' >> index.html
-          echo '<body>' >> index.html
-          echo '  <p>Redirecting to <a href="lacunafund.org/index.html">Lacuna Fund</a>...</p>' >> index.html
-          echo '</body>' >> index.html
-          echo '</html>' >> index.html
+          # Create _site directory
+          mkdir -p _site
+          # Copy the httrack backup to _site
+          cp -r lacunafund-httrack-backup/lacunafund.org/* _site/
+          
+      - name: Run banner deployment
+        run: |
+          # Install BeautifulSoup
+          pip install beautifulsoup4
+          # Run the banner deployment script
+          python deploy_banner_manager.py --directory _site
+          
+      - name: Create root index.html file
+        run: |
+          echo '<!DOCTYPE html>' > _site/index.html
+          echo '<html>' >> _site/index.html
+          echo '<head>' >> _site/index.html
+          echo '  <meta charset="UTF-8">' >> _site/index.html
+          echo '  <title>Lacuna Fund Backup</title>' >> _site/index.html
+          echo '  <style>' >> _site/index.html
+          echo '    body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }' >> _site/index.html
+          echo '    .container { max-width: 800px; margin: 0 auto; }' >> _site/index.html
+          echo '  </style>' >> _site/index.html
+          echo '</head>' >> _site/index.html
+          echo '<body>' >> _site/index.html
+          echo '  <div class="container">' >> _site/index.html
+          echo '    <h1>Lacuna Fund Backup Site</h1>' >> _site/index.html
+          echo '    <p>This is a backup of the Lacuna Fund website.</p>' >> _site/index.html
+          echo '    <p>If you are not redirected automatically, please <a href="index.html">click here</a>.</p>' >> _site/index.html
+          echo '  </div>' >> _site/index.html
+          echo '</body>' >> _site/index.html
+          echo '</html>' >> _site/index.html
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload the entire directory with our redirect at root
-          path: '.'
+          # Upload only the _site directory containing our website files
+          path: '_site'
       
       - name: Deploy to GitHub Pages
         id: deployment
